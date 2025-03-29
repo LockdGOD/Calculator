@@ -1,0 +1,158 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.math.*;
+
+public class Calculator extends JFrame {
+    private JTextField textField;
+    private StringBuilder currentInput = new StringBuilder();
+
+    public Calculator() {
+        setTitle("Calculator");
+        setSize(400, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+        // Layout
+        setLayout(new BorderLayout());
+        
+        // Display field at the top
+        textField = new JTextField();
+        textField.setFont(new Font("Arial", Font.PLAIN, 24));
+        textField.setEditable(false);
+        add(textField, BorderLayout.NORTH);
+        
+        // Panel for buttons
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(5, 4, 10, 10)); // 5 rows, 4 columns
+        add(panel, BorderLayout.CENTER);
+
+        // Add button labels
+        String[] buttonLabels = {
+            "7", "8", "9", "/",
+            "4", "5", "6", "*",
+            "1", "2", "3", "-",
+            "0", ".", "=", "+",
+            "sqrt", "sin", "cos", "tan"
+        };
+
+        // Create buttons and add action listeners
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            button.setFont(new Font("Arial", Font.PLAIN, 20));
+            button.addActionListener(new ButtonClickListener());
+            panel.add(button);
+        }
+    }
+
+    // ActionListener for button clicks
+    private class ButtonClickListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+
+            if (command.equals("=")) {
+                try {
+                    double result = evaluate(currentInput.toString());
+                    textField.setText(String.valueOf(result));
+                    currentInput.setLength(0); // Clear input after calculation
+                } catch (Exception ex) {
+                    textField.setText("Error");
+                    currentInput.setLength(0);
+                }
+            } else if (command.equals("sqrt")) {
+                try {
+                    double num = Double.parseDouble(currentInput.toString());
+                    double result = Math.sqrt(num);
+                    textField.setText(String.valueOf(result));
+                    currentInput.setLength(0);
+                } catch (Exception ex) {
+                    textField.setText("Error");
+                    currentInput.setLength(0);
+                }
+            } else if (command.equals("sin")) {
+                try {
+                    double num = Double.parseDouble(currentInput.toString());
+                    double result = Math.sin(Math.toRadians(num));
+                    textField.setText(String.valueOf(result));
+                    currentInput.setLength(0);
+                } catch (Exception ex) {
+                    textField.setText("Error");
+                    currentInput.setLength(0);
+                }
+            } else if (command.equals("cos")) {
+                try {
+                    double num = Double.parseDouble(currentInput.toString());
+                    double result = Math.cos(Math.toRadians(num));
+                    textField.setText(String.valueOf(result));
+                    currentInput.setLength(0);
+                } catch (Exception ex) {
+                    textField.setText("Error");
+                    currentInput.setLength(0);
+                }
+            } else if (command.equals("tan")) {
+                try {
+                    double num = Double.parseDouble(currentInput.toString());
+                    double result = Math.tan(Math.toRadians(num));
+                    textField.setText(String.valueOf(result));
+                    currentInput.setLength(0);
+                } catch (Exception ex) {
+                    textField.setText("Error");
+                    currentInput.setLength(0);
+                }
+            } else {
+                currentInput.append(command);
+                textField.setText(currentInput.toString());
+            }
+        }
+    }
+
+    // Method to evaluate simple expressions (without precedence)
+    private double evaluate(String expression) throws Exception {
+        // Simple evaluation of basic operations (+, -, *, /, ^)
+        String[] tokens = expression.split(" ");
+        if (tokens.length < 3) {
+            throw new Exception("Invalid Expression");
+        }
+        
+        double result = Double.parseDouble(tokens[0]);
+        for (int i = 1; i < tokens.length; i += 2) {
+            String operator = tokens[i];
+            double operand = Double.parseDouble(tokens[i + 1]);
+
+            switch (operator) {
+                case "+":
+                    result += operand;
+                    break;
+                case "-":
+                    result -= operand;
+                    break;
+                case "*":
+                    result *= operand;
+                    break;
+                case "/":
+                    if (operand == 0) {
+                        throw new ArithmeticException("Division by zero");
+                    }
+                    result /= operand;
+                    break;
+                case "^":
+                    result = Math.pow(result, operand);
+                    break;
+                default:
+                    throw new Exception("Unknown operator: " + operator);
+            }
+        }
+        return result;
+    }
+
+    // Main method to run the calculator
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Calculator().setVisible(true);
+            }
+        });
+    }
+}
